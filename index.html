@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cool Weather App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #3b82f6, #6366f1, #9333ea);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 24px;
+      width: 320px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #6366f1;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4f46e5;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .weather {
+      margin-top: 20px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    @keyframes fadeUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .temp {
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .desc {
+      text-transform: capitalize;
+      color: #555;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🌤️ Weather App</h1>
+    <input id="city" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="error" class="error"></div>
+    <div id="weather" class="weather"></div>
+  </div>
+
+  <script>
+    const API_KEY = "2e7a49bb1a6e836543d1614f6a891dac"; // OpenWeatherMap API key
+
+    async function getWeather() {
+      const city = document.getElementById("city").value;
+      const error = document.getElementById("error");
+      const weatherDiv = document.getElementById("weather");
+
+      error.textContent = "";
+      weatherDiv.innerHTML = "";
+
+      if (!city) return;
+
+      try {
+        const res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`
+        );
+
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        weatherDiv.innerHTML = `
+          <h2>${data.name}</h2>
+          <div class="temp">${Math.round(data.main.temp)}°C</div>
+          <div class="desc">${data.weather[0].description}</div>
+          <div class="stats">
+            <div>💧 ${data.main.humidity}%</div>
+            <div>🌬️ ${data.wind.speed} m/s</div>
+            <div>☁️ ${data.clouds.all}%</div>
+          </div>
+        `;
+      } catch {
+        error.textContent = "City not found ❌";
+      }
+    }
+  </script>
+</body>
+</html>
